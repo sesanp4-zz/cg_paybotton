@@ -1,0 +1,52 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.services;
+
+import com.google.gson.JsonObject;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+
+/**
+ * REST Web Service
+ *
+ * @author centricgateway
+ */
+@Path("PaymentLink/v1")
+public class PaymentLinkService {
+    
+     JsonObject obj;
+
+    @Context
+    private UriInfo context;
+
+    /**
+     * Creates a new instance of PaymentLinkService
+     */
+    public PaymentLinkService() {
+    }
+
+    
+    @Path("get/link/text}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String generateLink(@PathParam("key")String key) {
+        
+        // check the text to know the merchant link that should be generated
+        return "http://bc-design.surge.sh"+key;
+        
+        //throw new UnsupportedOperationException();
+    }
+
+   
+}
