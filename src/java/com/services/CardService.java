@@ -130,6 +130,13 @@ public class CardService {
       return cardApi.fetchStatusFromCore(linkingref);
     }
     
+    @POST
+    @Path("refund/{reference}")
+    @Produces(MediaType.APPLICATION_JSON)   
+    public String refund(@PathParam("reference")String reference){
+      return cardApi.initiateRefund(reference).toString();
+    }
+    
     @Path("poll/status")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

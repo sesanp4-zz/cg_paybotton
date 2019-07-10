@@ -78,13 +78,17 @@ public class Dao {
     public com.entities.Transaction ngetTransactionDetails(String reference){
       com.entities.Transaction transaction=null;
       try{
+          System.out.println("=========== Getting transaction Details started ========");
            session= HibernateUtil.getSessionFactory().openSession();
           session.beginTransaction();
+          System.out.println("=========== About to fetch Transaction Details =========");
           query =  session.createQuery("from Transaction  transaction where transaction.ref=:reference");
           query.setParameter("reference", reference);
           transaction =(com.entities.Transaction) query.uniqueResult();
           session.getTransaction().commit();
+           System.out.println("=========== Done fetch Transaction Details =========");
       }catch(Exception e){
+           System.out.println("=========== An Error has Occured =========");
           System.out.println(e.getMessage());
       }finally{
          if (session != null) {

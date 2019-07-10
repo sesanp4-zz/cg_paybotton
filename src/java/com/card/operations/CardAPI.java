@@ -725,18 +725,87 @@ public class CardAPI {
     };
     
     
+    public JsonObject initiateRefund(String reference){
+        
+       try{ 
+            com.entities.Transaction transaction =null;
+            Dao d = new Dao();
+            transaction=d.ngetTransactionDetails(reference); 
+
+            
+            System.out.println("======= Message gotten from dao =======");
+            System.out.println(gson.toJson(transaction));
+            
+         if(transaction!=null){
+
+          //Consruct Payload to send
+          JsonObject  payload = new JsonObject();
+          JsonObject  transaction_obj = new JsonObject();
+          JsonObject  source_obj = new JsonObject();
+          JsonObject  order_obj = new JsonObject();
+          
+          payload.addProperty("publickey", util.getAppProperties().getProperty("publickey"));
+          transaction_obj.addProperty("linkingreference",transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayref());        
+          payload.add("transaction", transaction_obj);
+          source_obj.addProperty("operation", "card_refund");
+          payload.add("source", source_obj);
+          order_obj.addProperty("currency", transaction.getUserinfo().getCurrency());
+          order_obj.addProperty("description", "refund");
+          order_obj.addProperty("country", transaction.getUserinfo().getCountry());
+          order_obj.addProperty("amount", transaction.getUserinfo().getTransactionInfo().getAmount());
+          payload.add("order", order_obj);
+          
+          //Call thirdparty authentication endpoint
+          obj = new JsonParser().parse(util.getThirdPartyApi()).getAsJsonObject();
+          
+          //set parameters for core transaction refund         
+          post = new HttpPost(util.getAppProperties().getProperty("refund_endpoint"));
+          post.setHeader("Authorization", "Bearer "+obj.get("access_token").getAsString());
+          post.setHeader("Content-Type", "application/json");
+          StringEntity ent = new StringEntity(payload.toString());
+          System.out.println("...request sent to refund  endpoint...."+payload);
+          post.setEntity(ent);
+          response=client.execute(post);
+          String msg = EntityUtils.toString(response.getEntity());
+          obj = new JsonParser().parse(msg).getAsJsonObject();
+          JsonObject response = new JsonParser().parse(gson.toJson(transaction)).getAsJsonObject();
+          response.add("metadata", obj);
+          return response;  
+            }else{
+               obj = new JsonObject();
+               obj.addProperty("code", "S1");
+               obj.addProperty("message", "Transaction not found");
+               return obj;
+            } 
+       }catch(Exception e){
+           System.out.println("somethig is wrong");
+           System.out.println(e.getMessage());
+           obj = new JsonObject();
+           obj.addProperty("code", "S1");
+           obj.addProperty("message", "Operation failed");
+           return obj;
+       } 
+        
+    }
+    
+    
     public static void main(String[] args) {
        // System.out.println(new CardAPI().checkStatusFromThirdParty("123", " CGS_29"));
        
-       
-       String p="[a-zA-Z]";
-       String text="-";
-       
-        Pattern pt =Pattern.compile(p);
-        Matcher m   = pt.matcher(text);
-        
-        System.out.println(m.matches());
-       
+//       
+//       String p="[a-zA-Z]";
+//       String text="-";
+//       
+//        Pattern pt =Pattern.compile(p);
+//        Matcher m   = pt.matcher(text);
+//        
+//        System.out.println(m.matches());
+
+          System.out.println(new CardAPI().initiateRefund("TH01"));
+           
+//        Dao d = new Dao();
+//        Gson g = new Gson();
+//        System.out.println(g.toJson(d.ngetTransactionDetails("TH01")));
        
     }
     
