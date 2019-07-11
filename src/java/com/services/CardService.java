@@ -42,7 +42,7 @@ import org.apache.http.impl.client.HttpClients;
  *
  * @author centricgateway
  */
-@Path("card/v1")
+@Path("v1")
 public class CardService {
 
    

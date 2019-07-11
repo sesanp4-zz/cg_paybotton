@@ -19,9 +19,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Event")
-public class Event implements Serializable {
+public class Event {
     
-    private static final long serialVersionUID = 1L;
+   // private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")

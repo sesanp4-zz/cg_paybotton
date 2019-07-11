@@ -112,12 +112,21 @@ public class CardAPI {
         if(validator.validateMerchant(trx_info.getPublic_key(), user_info.getCurrency(), trx_info.getAmount())){
 
             //Create a thread to  add a copy of the transaction to database
-             executorservice.execute(()->{
-              String status = new Dao().addObject(trx);
-              System.out.println(status);
-            });
+//             executorservice.execute(()->{
+//              String status = new Dao().addObject(trx);
+//              System.out.println(status);
+//            });
              
-            
+                // save the object first then send to core
+               if(dao.addObject(trx)<0){
+                 obj = new JsonObject();
+                 obj.addProperty("code", "S31");
+                 obj.addProperty("message", "operation failed");
+                 System.out.println("could not save object");
+                 return obj.toString();
+               }
+               
+               // Sending to cores
              
              // Get Access Token //        
              obj = new JsonParser().parse(util.getThirdPartyApi()).getAsJsonObject();
@@ -326,11 +335,11 @@ public class CardAPI {
         if(validator.validateMerchant(trans.getMid(), trans.getCurrency(), trans.getAmount())){
 
             //Create a thread to  add a copy of the transaction to database
-            System.out.println("sending obj to database now...");
-             executorservice.execute(()->{
-              String status = new Dao().addObject(trans);
-              System.out.println("status when transaction was saved..."+status);
-            });
+//            System.out.println("sending obj to database now...");
+//             executorservice.execute(()->{
+//              String status = new Dao().addObject(trans);
+//              System.out.println("status when transaction was saved..."+status);
+//            });
              
                  // Get Access Token // 
                  System.out.println("checking access token now");

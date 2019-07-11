@@ -9,6 +9,7 @@ import com.entities.Event;
 import com.entities.TransactionEvent;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.enterprise.context.RequestScoped;
@@ -35,18 +36,18 @@ public class Dao {
      
      ExecutorService es = Executors.newFixedThreadPool(1);
     
-         public String addObject(Object userdetail){
+         public int addObject(Object obj){
          try{
+            // Long status=0;
           session= HibernateUtil.getSessionFactory().openSession();
-          //session = sf.openSession();
           session.beginTransaction();
-          session.save(userdetail);
-          session.getTransaction().commit();
-        return "user added successfully"; 
+          Long id= (Long) session.save(obj);             
+          session.getTransaction().commit();         
+          System.out.println("user added successfully with id "+id); 
+          return id.intValue();
         }catch(Exception e ){
-             System.out.println("cause.."+e.getMessage());
-          System.out.println(e.getMessage());
-          return e.getMessage(); 
+             System.out.println(" could not save object cause.."+e.getMessage());
+             return 0;
         } finally{
           if (session != null) {
                  session.close();

@@ -7,8 +7,8 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="cg_bc" default="default" basedir=".">
-    <description>Builds, tests, and runs the project cg_bc.</description>
+<project name="cg_seerbit" default="default" basedir=".">
+    <description>Builds, tests, and runs the project cg_seerbit.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
 

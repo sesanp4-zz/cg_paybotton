@@ -21,9 +21,9 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "Transactions")
-public class Transactions implements Serializable{
+public class Transactions{
     
-    private static final long serialVersionUID = 1L;
+   // private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")

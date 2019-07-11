@@ -30,7 +30,6 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(com.authentication.AuthenticationHandler.class);
-        resources.add(com.services.AccountService.class);
         resources.add(com.services.CardService.class);
         resources.add(com.services.MerchantService.class);
         resources.add(com.services.PaymentLinkService.class);
