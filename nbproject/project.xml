@@ -54,10 +54,6 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.Hibernate_Version_5_with_dependencies.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
                     <file>${file.reference.log4j.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
@@ -66,7 +62,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.mchange-commons-java-0.2.11.jar}</file>
+                    <file>${libs.Hibernate-c3p0.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

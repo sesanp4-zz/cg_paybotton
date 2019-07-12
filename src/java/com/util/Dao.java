@@ -10,6 +10,7 @@ import com.entities.TransactionEvent;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.io.Serializable;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.enterprise.context.RequestScoped;
@@ -34,11 +35,13 @@ public class Dao {
      Gson gson = new Gson();
      Utilities util = new Utilities();
      
+     
+     
      ExecutorService es = Executors.newFixedThreadPool(1);
     
          public int addObject(Object obj){
          try{
-            // Long status=0;
+            // Long status=0;          
           session= HibernateUtil.getSessionFactory().openSession();
           session.beginTransaction();
           Long id= (Long) session.save(obj);             
@@ -49,8 +52,11 @@ public class Dao {
              System.out.println(" could not save object cause.."+e.getMessage());
              return 0;
         } finally{
-          if (session != null) {
-                 session.close();
+          if (session!=null) {
+                if(session.isOpen()) {
+                    session.flush();
+                    session.close();
+                }
              }
         }         
     }
@@ -68,8 +74,11 @@ public class Dao {
           System.out.println(e.getMessage());
       }     
       finally{
-           if (session != null) {
-            session.close();
+           if (session!=null) {
+              if (session.isOpen()) {
+                  session.flush();
+                    session.close();
+                }
     }
       }
       return "successful";
@@ -92,8 +101,12 @@ public class Dao {
            System.out.println("=========== An Error has Occured =========");
           System.out.println(e.getMessage());
       }finally{
-         if (session != null) {
-            session.close();
+         if (session!=null) {
+           if (session.isOpen()) {
+                   session.flush();
+                    session.close();
+                    //HibernateUtil.getSessionFactory().close();
+                }
          }
       }   
       return transaction;
@@ -133,8 +146,11 @@ public class Dao {
           System.out.println("...."+e.getMessage());
           return obj;
       }finally{
-        if (session != null) {
-             session.close();
+        if (session!=null) {
+            if (session.isOpen()) {
+                  session.flush();
+                    session.close();
+                }
            }
         
       }
@@ -172,8 +188,11 @@ public class Dao {
           System.out.println("...."+e.getMessage());
           return obj.toString();
       }finally{
-        if (session != null) {
-             session.close();
+        if (session!=null) {
+             if (session.isOpen()) {
+                    session.flush();
+                    session.close();
+                }
            }
         
       }
@@ -211,8 +230,11 @@ public class Dao {
           System.out.println("...."+e.getMessage());
           return obj.toString();
       }finally{
-        if (session != null) {
-             session.close();
+        if (session!=null) {
+             if (session.isOpen()) {
+                 session.flush();
+                    session.close();
+                }
            }
         
       }
@@ -241,6 +263,7 @@ public class Dao {
             }
             obj2 = new JsonObject();
             obj2.addProperty("linkingreference", transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayref());
+            obj2.addProperty("reference", transaction.getRef());
             obj2.addProperty("callbackurl", transaction.getUserinfo().getTransactionInfo().getCallbackurl());
             obj.add("transaction", obj2);
             
@@ -254,8 +277,11 @@ public class Dao {
           System.out.println("...."+e.getMessage());
           return obj.toString();
       }finally{
-         if (session != null) {
-             session.close();
+         if (session!=null) {
+             if (session.isOpen()) {
+                 session.flush();
+                    session.close();
+                }
           }
       }
             
@@ -284,8 +310,11 @@ public class Dao {
           System.out.println("...."+e.getMessage());
           return obj.toString();
       }finally{
-         if (session != null) {
-             session.close();
+         if (session!=null) {
+             if (session.isOpen()) {
+                 session.flush();
+                    session.close();
+                }
           }
       }
     }
@@ -327,8 +356,11 @@ public class Dao {
           System.out.println("error side...."+e.getMessage());
           return obj;
       }finally{
-        if (session != null) {
-             session.close();
+        if (session!=null) {
+            if (session.isOpen()) {
+                session.flush();
+                    session.close();
+                }
            }
         
       }
@@ -616,11 +648,21 @@ public class Dao {
           }
       }
     }
+      
+      public void getAllTransactions(){
+      
+            session= HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
+            query = session.createQuery("from Transaction");
+            List list = query.list();
+          
+      }
+      
     public static void main(String[] args) {
        // System.out.println(new Dao().getTransactionStatus("F086624541561296348775"));
       //  System.out.println(new Dao().updateTransaction("CS_001","null","S7","Generic Error Occurred"));
       //  System.out.println(new Dao().getTransactionDetails("CS_001"));
-        System.out.println(new Gson().toJson(new Dao().ngetTransactionDetails("T04")));
+        System.out.println(new Gson().toJson(new Dao().ngetTransactionDetails("Pg59821763")));
     }
       
 }
