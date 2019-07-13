@@ -662,7 +662,7 @@ public class Dao {
        // System.out.println(new Dao().getTransactionStatus("F086624541561296348775"));
       //  System.out.println(new Dao().updateTransaction("CS_001","null","S7","Generic Error Occurred"));
       //  System.out.println(new Dao().getTransactionDetails("CS_001"));
-        System.out.println(new Gson().toJson(new Dao().ngetTransactionDetails("Pg59821763")));
+      //  System.out.println(new Gson().toJson(new Dao().ngetTransactionDetails("sp2")));
     }
       
 }

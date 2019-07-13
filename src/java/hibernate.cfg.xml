@@ -41,20 +41,36 @@ Contributor(s):
 -->
 <hibernate-configuration>
   <session-factory>
+      <!-- live -->
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="hibernate.connection.url">jdbc:mysql://fcmb.cr6kme5bqnc9.us-east-2.rds.amazonaws.com:3306/BritishCouncilDB</property>
+    <property name="hibernate.connection.url">jdbc:mysql://fcmb.cr6kme5bqnc9.us-east-2.rds.amazonaws.com:3306/sbt_core</property>
     <property name="hibernate.show_sql">true</property>
     <property name="hibernate.hbm2ddl.auto">update</property>
     <property name="hibernate.connection.username">fcmb</property>
     <property name="hibernate.connection.password">centricgwsbit_138#_123</property>
-   <!-- <property name="hibernate.current_session_context_class">thread</property>-->
-   <!-- <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>-->
+   
+ <!--  <property name="hibernate.current_session_context_class">thread</property>
+   <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>-->
+  
+   
+        <!-- local 
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:8889/DC_DB</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.hbm2ddl.auto">update</property>
+    <property name="hibernate.connection.username">root</property>
+    <property name="hibernate.connection.password">root</property>
+      
+      -->
     
-    <property name="hibernate.c3p0.min_size">5</property>
-    <property name="hibernate.c3p0.max_size">20</property>
-    <property name="hibernate.c3p0.timeout">3000</property>
-    <property name="hibernate.c3p0.max_statements">50</property>
-    <property name="hibernate.c3p0.idle_test_period">300</property>
+    <!--Pool
+    <property name="hibernate.c3p0.min_size">10</property>
+    <property name="hibernate.c3p0.max_size">50</property>
+    <property name="hibernate.c3p0.timeout">1800</property>
+    <property name="hibernate.c3p0.validationQuery">SELECT 1</property>
+    <property name="hibernate.c3p0.idleConnectionTestPeriod">300</property>
+    <property name="hibernate.c3p0.maxIdleTimeExcessConnections">240</property>
+    End pool-->
     
     <mapping class="com.entities.Transaction"/>
     <mapping class="com.entities.Event"/>

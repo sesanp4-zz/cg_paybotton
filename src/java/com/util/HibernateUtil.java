@@ -24,41 +24,87 @@ public class HibernateUtil {
 
 //     private static  SessionFactory sessionFactory;
 //    
-//    public static final SessionFactory getSessionFactory() {
-//        if ( sessionFactory == null ) {
-//         StandardServiceRegistry   serviceRegistry = new StandardServiceRegistryBuilder()
-//                    .configure()
-//                    .build();
-//            sessionFactory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
-//        }
-//        return sessionFactory;
-//    }
+    public static final SessionFactory getSessionFactory() {
+        if ( sessionFactory == null ) {
+         StandardServiceRegistry   serviceRegistry = new StandardServiceRegistryBuilder()
+                    .configure()
+                    .build();
+            sessionFactory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+        }
+        return sessionFactory;
+    }
     
     
      private static  SessionFactory sessionFactory;
-       private static  StandardServiceRegistry   serviceRegistry;
-
+     private static  StandardServiceRegistry   serviceRegistry;
+/*
     static {
         try {
-           if (sessionFactory == null ) {
               serviceRegistry = new StandardServiceRegistryBuilder()
               .configure()
               .build();
               sessionFactory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
-          }
+
         } catch (Throwable ex) {
-            // Log the exception. 
-            if(serviceRegistry!=null){
-             StandardServiceRegistryBuilder.destroy(serviceRegistry);
-            }
             System.out.println("cause...."+ex.getMessage());
             throw new ExceptionInInitializerError(ex);
         }
     }
     
+    
+    
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
-   
+   */
     
 }
+
+
+
+
+
+//public class HibernateUtil {
+//
+////     private static  SessionFactory sessionFactory;
+////    
+////    public static final SessionFactory getSessionFactory() {
+////        if ( sessionFactory == null ) {
+////         StandardServiceRegistry   serviceRegistry = new StandardServiceRegistryBuilder()
+////                    .configure()
+////                    .build();
+////            sessionFactory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+////        }
+////        return sessionFactory;
+////    }
+//    
+//    
+//     private static  SessionFactory sessionFactory;
+//       private static  StandardServiceRegistry   serviceRegistry;
+//
+//    static {
+//        try {
+//           if (sessionFactory == null ) {
+//              serviceRegistry = new StandardServiceRegistryBuilder()
+//              .configure()
+//              .build();
+//              sessionFactory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+//          }
+//        } catch (Throwable ex) {
+//            // Log the exception. 
+//            if(serviceRegistry!=null){
+//             StandardServiceRegistryBuilder.destroy(serviceRegistry);
+//            }
+//            System.out.println("cause...."+ex.getMessage());
+//            throw new ExceptionInInitializerError(ex);
+//        }
+//    }
+//    
+//    public static SessionFactory getSessionFactory() {
+//        return sessionFactory;
+//    }
+//   
+//    
+//}
+
+
