@@ -20,6 +20,7 @@ import com.util.Utilities;
 import com.validator.Validator;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -82,6 +83,7 @@ public class CardAPI {
         // Set properties of the entities
            
            trx_info.setAmount(trx_proxy.getAmount());
+           trx_info.setFee(trx_proxy.getFee());
            trx_info.setCallbackurl(trx_proxy.getCallbackurl());
            trx_info.setClientAppCode(trx_proxy.getClientappcode());
            trx_info.setDatetime(datetime);
@@ -159,8 +161,10 @@ public class CardAPI {
           source.setEmail(trx_proxy.getEmail());
           source.setType(trx_proxy.getType());
           source.setCard(card);
-          
-          order.setAmount(trx_proxy.getAmount());
+          Double fee=Double.parseDouble(trx_proxy.getFee());
+          Double amount=Double.parseDouble(trx_proxy.getAmount());
+          String grossamount=Double.toString(fee+amount);
+          order.setAmount(grossamount);
           order.setCountry(trx_proxy.getCountry());
           order.setCurrency(trx_proxy.getCurrency());
           order.setDescription(trx_proxy.getDescription());
@@ -568,9 +572,13 @@ public class CardAPI {
               JsonObject transactionObj=obj.get("transaction").getAsJsonObject();
               JsonObject orderObj=obj.get("order").getAsJsonObject();
               
-
-                
-                if(code.equals("00")&&message.equals("Successful")&&orderObj.get("amount").getAsString().equals(transaction.getUserinfo().getTransactionInfo().getAmount())){
+                        // code.equals("00")&&message.equals("Successful")&&
+                        
+                BigDecimal amount=new BigDecimal(transaction.getUserinfo().getTransactionInfo().getAmount());
+                BigDecimal fee =  new BigDecimal(transaction.getUserinfo().getTransactionInfo().getFee());
+                BigDecimal totalamount=amount.add(fee);
+                System.out.println("total...."+totalamount);
+                if(orderObj.get("amount").getAsString().equals(totalamount.toString())){
                     System.out.println("third party transaction verification succesful");
                     System.out.println("response from thirdparty..."+obj);
                     System.out.println("transaction..."+gson.toJson(transaction));

@@ -189,6 +189,28 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
     } 
       
      
+     public JsonObject fectchMerchantInfoforTThirdParty(String mid){
+         try{
+
+             get = new HttpGet(getAppProperties().getProperty("verify_merchant_info")+mid);
+             response=client.execute(get);
+             String msg = EntityUtils.toString(response.getEntity());
+             obj = new JsonParser().parse(msg).getAsJsonObject();
+             System.out.println("merchant info response...."+obj);               
+             return obj;
+             
+         }catch(Exception e){
+           obj = new JsonObject();
+           obj.addProperty("code", "S23");
+           obj.addProperty("message", "operation failed");
+           System.out.println("cause...."+e.getMessage());
+           return obj;
+         }
+    } 
+      
+     
+     
+     
     public void sendToSettlement(com.entities.Transaction transaction){
         try{            
             String datetime=transaction.getUserinfo().getTransactionInfo().getDatetime().replaceAll(":", "").replaceAll(" ", "");
@@ -227,7 +249,7 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
            response=client.execute(post);
            String msg = EntityUtils.toString(response.getEntity());
            obj = new JsonParser().parse(msg).getAsJsonObject();
-           System.out.println("response from settlement...."+obj);
+           System.out.println(" ========== response from settlement ========="+obj);
            
            //constructing object to update transaction with settlement info in another thread
            

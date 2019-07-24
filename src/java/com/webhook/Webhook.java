@@ -1,0 +1,24 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.webhook;
+
+/**
+ *
+ * @author centricgateway
+ */
+public class Webhook {
+    
+    String eventType;
+    
+    String notificationurl;
+    
+    String merchantkey;
+    
+    NotificationBody body;
+    
+    
+    
+}

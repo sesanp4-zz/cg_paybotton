@@ -45,6 +45,8 @@ public class Transaction{
     
     @Column(name="time_to_settlement")
     String time_to_settlement;
+    
+    
 
     public Long getId() {
         return id;

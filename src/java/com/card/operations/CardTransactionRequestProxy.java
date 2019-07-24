@@ -12,7 +12,7 @@ package com.card.operations;
 public class CardTransactionRequestProxy {
     
     String fullname, email, mobile, public_key, tranref, currency, description,
-    country,amount,clientappcode, redirecturl, callbackurl, type,channelType,deviceType,sourceIP;
+    country,amount,clientappcode, redirecturl, callbackurl, type,channelType,deviceType,sourceIP,fee;
     
     Card card;
 
@@ -151,9 +151,17 @@ public class CardTransactionRequestProxy {
     public void setSourceIP(String sourceIP) {
         this.sourceIP = sourceIP;
     }
-   
+
+    public String getFee() {
+        return fee;
+    }
+
+    public void setFee(String fee) {
+        this.fee = fee;
+    }
+
     
-    
-    
+
+       
     
 }

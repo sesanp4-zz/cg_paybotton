@@ -254,6 +254,7 @@ public class Dao {
             obj.addProperty("customerName", transaction.getUserinfo().getFullname());
             obj.addProperty("customerMobile", transaction.getUserinfo().getMobile());
             obj.addProperty("customerEmail", transaction.getUserinfo().getEmail());
+            obj.addProperty("fee", transaction.getUserinfo().getTransactionInfo().getFee());
             obj.addProperty("amount", transaction.getUserinfo().getTransactionInfo().getAmount());
             obj.addProperty("code", transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayCode());
             if(transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage().equals("APPROVED")){

@@ -30,12 +30,15 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(com.authentication.AuthenticationHandler.class);
+        resources.add(com.services.AccountService.class);
         resources.add(com.services.CardService.class);
         resources.add(com.services.MerchantService.class);
         resources.add(com.services.PaymentLinkService.class);
         resources.add(com.services.Service.class);
+        resources.add(com.services.ThirdPartyService.class);
         resources.add(com.util.Cors.class);
         resources.add(com.util.GenericExceptionMapper.class);
+        resources.add(com.webhook.service.webhook.class);
     }
     
     

@@ -44,6 +44,9 @@ public class TransactionInfo{
     
     @Column(name="amount")
     String  amount;
+    
+    @Column(name="fee")
+    String  fee;
         
     @Column(name="clientAppCode")
     String  clientAppCode;
@@ -61,6 +64,9 @@ public class TransactionInfo{
     
     @Column(name="channel")
     String channel;
+    
+   // @Column(name="productID")
+   // String productID;
     
     @Column(name="channelType")
     String channelType;
@@ -210,6 +216,16 @@ public class TransactionInfo{
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
     }
+
+    public String getFee() {
+        return fee;
+    }
+
+    public void setFee(String fee) {
+        this.fee = fee;
+    }
+
+   
 
     
     
