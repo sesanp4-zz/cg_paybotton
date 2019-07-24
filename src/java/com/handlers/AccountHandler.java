@@ -63,7 +63,7 @@ public class AccountHandler {
                  
                  source.setAccount(account);
                  source.setFirstname(proxy.getFullname());
-                 source.setOperation(util.getAppProperties().getProperty("operation"));
+                 source.setOperation(util.getAppProperties().getProperty("account_operation"));
                  
                  order.setAmount(proxy.getAmount());
                  order.setCountry(proxy.getCountry());
@@ -87,7 +87,7 @@ public class AccountHandler {
              
                 System.out.println(" ======== object sending ======="+gson.toJson(payload));
                 
-                post = new HttpPost(util.getAppProperties().getProperty("transaction_initiate_endpoint"));
+                post = new HttpPost(util.getAppProperties().getProperty("account_initiate_endpoint"));
                 post.setHeader("Authorization", "Bearer "+obj.get("access_token").getAsString());
                 post.setHeader("Content-Type", "application/json");
                 ent = new StringEntity(gson.toJson(payload));
@@ -136,7 +136,7 @@ public class AccountHandler {
              
                 System.out.println(" ======== object sending ======="+gson.toJson(payload));
                 
-                post = new HttpPost(util.getAppProperties().getProperty("transaction_otp_validation_endpoint"));
+                post = new HttpPost(util.getAppProperties().getProperty("account_otp_validation_endpoint"));
                 post.setHeader("Authorization", "Bearer "+obj.get("access_token").getAsString());
                 post.setHeader("Content-Type", "application/json");
                 ent = new StringEntity(gson.toJson(payload));
