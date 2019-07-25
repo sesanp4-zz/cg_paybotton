@@ -10,6 +10,10 @@ import com.google.gson.JsonParser;
 import com.handlers.AccountHandler;
 import com.model.TransactionInitiationPayloadProxy;
 import com.model.Transactionvalidationproxy;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -22,6 +26,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.soap.SOAPException;
+import org.json.JSONException;
 
 /**
  * REST Web Service
@@ -52,6 +59,14 @@ public class AccountService {
      * Retrieves representation of an instance of com.sersvice.AccountService
      * @return an instance of java.lang.String
      */
+    
+    @GET
+    @Path("banklist")
+    @Produces(MediaType.APPLICATION_JSON)   
+    public Response getBankList() {      
+      return handler.getBankList();
+      
+    }
     
     
         @POST

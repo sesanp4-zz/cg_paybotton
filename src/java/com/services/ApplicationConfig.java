@@ -36,6 +36,7 @@ public class ApplicationConfig extends Application {
         resources.add(com.services.PaymentLinkService.class);
         resources.add(com.services.Service.class);
         resources.add(com.services.ThirdPartyService.class);
+        resources.add(com.services.WebhookService.class);
         resources.add(com.util.Cors.class);
         resources.add(com.util.GenericExceptionMapper.class);
         resources.add(com.webhook.service.webhook.class);

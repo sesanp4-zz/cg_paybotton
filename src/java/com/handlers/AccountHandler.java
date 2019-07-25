@@ -6,6 +6,7 @@
 package com.handlers;
 
 
+import com.acct.operations.AccountActions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,13 +21,20 @@ import com.model.Transactionvalidationproxy;
 import com.model.ValidateTransactionObject;
 import com.model.ValidationSource;
 import com.util.Utilities;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.xml.soap.SOAPException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 
 /**
  *
@@ -43,6 +51,9 @@ public class AccountHandler {
     StringEntity ent;
     
     Utilities util = new Utilities();
+    
+    @Inject
+    AccountActions actions;
     
     public String initiate(TransactionInitiationPayloadProxy proxy){
          try{
@@ -157,5 +168,19 @@ public class AccountHandler {
         }
         
     } 
+    
+    
+    public Response getBankList(){
+         try{
+             System.out.println("======checking=======");
+            return actions.getLiveBankList();
+         }catch(Exception e){
+             obj = new JsonObject();
+             obj.addProperty("code", "S7");
+             obj.addProperty("message", "operation failed");
+             System.out.println("======= cause ======="+e.getMessage());
+              return Response.status(Response.Status.BAD_REQUEST).entity(obj.toString()).build();
+         }
+    }
     
 }

@@ -344,11 +344,16 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
         System.out.println(unique);
     }
     
-    public Properties getAppProperties() throws IOException{
-       
-        Properties prop = new Properties();
+    public Properties getAppProperties(){    
+        Properties prop= null;
+       try{
+        prop  = new Properties();
         prop.load(this.getClass().getResourceAsStream("/app.properties"));
         return prop;
+       }catch(Exception e){
+           System.out.println("====== caused by ===== "+e.getMessage());
+          return prop;
+       }
     }
     
     public void check() throws IOException{

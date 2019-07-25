@@ -6,6 +6,7 @@
 package com.util;
 
 import com.entities.Event;
+import com.entities.Subscription;
 import com.entities.TransactionEvent;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -658,6 +659,35 @@ public class Dao {
             List list = query.list();
           
       }
+      
+      
+       public String getSubscription(String merchantKey){
+          Subscription subscription =null;
+         try{
+              session = HibernateUtil.getSessionFactory().openSession();
+              session.beginTransaction();
+              query = session.createQuery("From Subscription sub where sub.merchantkey=:key");
+              query.setParameter("key", merchantKey);
+              subscription = (Subscription)query.uniqueResult();
+              return  gson.toJson(subscription);              
+         }catch(Exception e){
+             System.out.println("failed=========="+obj.toString());
+            obj = new JsonObject();
+            obj.addProperty("code", "s7");
+            obj.addProperty("message", "operation failed");
+            return obj.toString();
+             
+         }finally{
+             if (session!=null) {
+                if(session.isOpen()) {
+                    session.flush();
+                    session.close();
+                }
+             }
+         }
+         
+    }
+      
       
     public static void main(String[] args) {
        // System.out.println(new Dao().getTransactionStatus("F086624541561296348775"));

@@ -78,5 +78,7 @@ Contributor(s):
     <mapping class="com.entities.TransactionInfo"/>
     <mapping class="com.entities.UserInfo"/>
     <mapping class="com.entities.Transactions"/>
+    <mapping class="com.entities.Subscription"/>
+    <mapping class="com.entities.WebhookEvent"/>
   </session-factory>
 </hibernate-configuration>

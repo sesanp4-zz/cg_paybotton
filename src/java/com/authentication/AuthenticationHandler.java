@@ -32,7 +32,7 @@ public class AuthenticationHandler implements ContainerRequestFilter{
         
 
         System.out.println("======="+requestContext.getUriInfo().getPath());
-        if(requestContext.getUriInfo().getPath().equals("/v1/auth")||requestContext.getUriInfo().getPath().equals("/v1/transaction/update")||requestContext.getUriInfo().getPath().startsWith("/v1/refund")){
+        if(requestContext.getUriInfo().getPath().equals("/v1/auth")||requestContext.getUriInfo().getPath().equals("/card/v1/transaction/update")||requestContext.getUriInfo().getPath().startsWith("/v1/refund")){
             
       
         

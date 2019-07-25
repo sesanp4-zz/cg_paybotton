@@ -10,14 +10,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.util.SSLManager;
+import com.util.Utilities;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.UUID;
+import javax.enterprise.context.RequestScoped;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
+import javax.ws.rs.core.Response;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
@@ -37,18 +40,91 @@ import org.w3c.dom.CDATASection;
  *
  * @author centricgateway
  */
+@RequestScoped
 public class AccountActions {
     
      //  String acctnum="5050007512";       
       //  String acctname="OKOLI CHUKWUMA PAUL";      
       //  String trantype ="1";
       //  String bankcode="070";
+    
+    /* for staging
         String billerid="NIBSS0000000130";
         String billername="UBACENTRIC";
         String key="FE4B6981AF8CF962B5A4F6AF2E6FD768";
- 
-    SOAPElement element1;
-    JsonObject obj;
+    */
+        SOAPElement element1;
+        JsonObject obj;
+        
+        String billerid;
+        String billername;
+        String key; 
+        String liveendpoint;
+        String requeryendpoint;
+        
+          Utilities util = new Utilities();
+    
+      public AccountActions(){
+           
+         billerid= util.getAppProperties().getProperty("billerid");
+         billername= util.getAppProperties().getProperty("billername");
+         key= util.getAppProperties().getProperty("key");
+         liveendpoint = util.getAppProperties().getProperty("liveendpoint");
+         requeryendpoint = util.getAppProperties().getProperty("requeryendpoint");
+      
+      }
+    
+    
+      public Response getLiveBankList() throws SOAPException, MalformedURLException, IOException, JSONException{ 
+        
+     try{
+        
+        QName  q = new QName("xmlns:web");
+        MessageFactory  mf = MessageFactory.newInstance();
+        SOAPMessage  m = mf.createMessage();
+        m.getSOAPPart().getEnvelope().addAttribute(q, "http://web.nibss.com/");
+        SOAPBody  body = m.getSOAPBody();
+        
+      SOAPElement element=  body.addChildElement("listActiveBanksOTP", "web"); 
+      element1=element.addChildElement("arg0").addTextNode(billerid);     
+      SOAPConnectionFactory fac =   SOAPConnectionFactory.newInstance();
+      SOAPConnection sc =  fac.createConnection();
+      new SSLManager().disableSSL();
+  
+     URL url = new URL(liveendpoint);
+     SOAPMessage response =sc.call(m, url);
+     m.writeTo(System.out);
+     System.out.println("++++++++Response+++++++++++");
+     response.writeTo(System.out);
+     sc.close();
+     
+     Iterator iterator1 =  response.getSOAPBody().getChildElements();
+          obj = new JsonObject();
+          JSONObject jobj=new JSONObject();
+          while(iterator1.hasNext()){     
+             SOAPBodyElement sb1 =(SOAPBodyElement)iterator1.next();
+             Iterator iterator2 = sb1.getChildElements();
+               while(iterator2.hasNext()){
+                  SOAPBodyElement sb2 =(SOAPBodyElement)iterator2.next();
+                  obj.addProperty(sb2.getNodeName(), sb2.getValue());
+                   jobj.append(sb2.getNodeName(),XML.toJSONObject(sb2.getValue(),true));
+                  
+               }
+
+               
+          }
+
+         obj = new JsonParser().parse(jobj.toString()).getAsJsonObject();       
+         return Response.status(Response.Status.OK).entity(obj.toString()).build();
+    } catch(Exception e){
+       obj = new JsonObject();
+       obj.addProperty("code", "S7");
+       obj.addProperty("message", "operation failed");
+       System.out.println(e.getMessage());
+       return Response.status(Response.Status.BAD_REQUEST).entity(obj.toString()).build();
+     }
+    
+    }
     
     
     public String getBankList() throws SOAPException, MalformedURLException, IOException, JSONException{        

@@ -5,10 +5,13 @@
  */
 package com.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  * @author centricgateway
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionInitiationPayloadProxy {
     
     String reference;
@@ -19,6 +22,10 @@ public class TransactionInitiationPayloadProxy {
     String description;
     String country;
     String amount;
+    
+    
+  //  String fullname, email, mobile, public_key, reference, currency, description,
+  //  country,amount,clientappcode, redirecturl, callbackurl, type,channelType,deviceType,sourceIP,fee;
 
     public String getReference() {
         return reference;
