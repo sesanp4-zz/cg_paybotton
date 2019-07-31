@@ -11,6 +11,211 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>Welcome</div>
+        <div>Welcome oooo</div>
+        <form >
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <button type="button" onclick="payWithPaystack()"> Pay </button> 
+</form>
+ 
+<script>
+  function payWithPaystack(){
+    var handler = PaystackPop.setup({
+      key: 'pk_test_4d91e4099a3b41cc31b4c0d1cf1687a24adbc309',
+      email: 'customer@email.com',
+      amount: 10000,
+      currency: "NGN",
+      ref: ''+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+      metadata: {
+         custom_fields: [
+            {
+                display_name: "Mobile Number",
+                variable_name: "mobile_number",
+                value: "+2348012345678"
+            }
+         ]
+      },
+      callback: function(response){
+          alert('success. transaction ref is ' + response.reference);
+      },
+      onClose: function(){
+          alert('window closed');
+      }
+    });
+    handler.openIframe();
+  }
+</script>
     </body>
 </html>
+
+
+
+
+
+
+    public String ok(CardTransactionRequestProxy trx_proxy){
+    
+          try{
+           
+                    // format the date
+           DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy:MM:dd hh:mm:ss");
+           String datetime=df.format(LocalDateTime.now());
+
+        
+        // Initiate Entities
+        com.entities.Transaction trx = new com.entities.Transaction();
+        com.entities.TransactionEvent trx_evt = new TransactionEvent();
+        com.entities.TransactionInfo trx_info = new TransactionInfo();
+        com.entities.UserInfo user_info = new UserInfo();
+        
+        // Set properties of the entities
+           
+           trx_info.setAmount(trx_proxy.getAmount());
+           trx_info.setFee(trx_proxy.getFee());
+           trx_info.setCallbackurl(trx_proxy.getCallbackurl());
+           trx_info.setClientAppCode(trx_proxy.getClientappcode());
+           trx_info.setDatetime(datetime);
+           trx_info.setDescription(trx_proxy.getDescription());
+           trx_info.setPublic_key(trx_proxy.getPublic_key());
+           trx_info.setRedirecturl(trx_proxy.getRedirecturl());
+           trx_info.setReference(trx_proxy.getTranref());
+           trx_info.setChannel("card");
+           trx_info.setChannelType(trx_proxy.getChannelType());
+           trx_info.setNumber(trx_proxy.getCard().getNumber());
+           trx_info.setTransactionEvent(trx_evt);
+           trx_info.setSourceIP(trx_proxy.getSourceIP());
+           trx_info.setDeviceType(trx_proxy.getDeviceType());
+
+           user_info.setCountry(trx_proxy.getCountry());
+           user_info.setCurrency(trx_proxy.getCurrency());
+           user_info.setEmail(trx_proxy.getEmail());
+           user_info.setFullname(trx_proxy.getFullname());
+           user_info.setMobile(trx_proxy.getMobile());
+           user_info.setTransactionInfo(trx_info);
+           
+                                 
+           trx.setRef(trx_proxy.getTranref());
+           trx.setUserinfo(user_info);
+           
+        
+          Validator validator = new Validator();
+          
+          if(validator.validateMerchant(trx_info.getPublic_key(), user_info.getCurrency(), trx_info.getAmount())){
+               
+                       // save the object first then send to core
+                JsonObject  status=dao.addObject(trx);
+                System.out.println("--------status----"+status);
+           if(status.get("code").getAsString().equals("00")){
+                 
+                    // Get Access Token //        
+             obj = new JsonParser().parse(util.getThirdPartyApi()).getAsJsonObject();
+             System.out.println("obj is ...."+obj);
+             
+             if(!obj.has("access_token")){
+                 obj2 = new JsonObject();
+                 obj2.addProperty("code", "S7");
+                 obj2.addProperty("message", "operation failed");
+                 System.out.println("cuase......"+obj);
+                return obj2.toString();
+             }else{
+                 
+                         // Construct the request to be sent to seerbit api         
+          CardTransactionRequest cr = new CardTransactionRequest();
+          Card card = new Card();
+          Source source = new Source();
+          Order order = new Order();
+          card.setCvv(trx_proxy.getCard().getCvv());
+          card.setNumber(trx_proxy.getCard().getNumber());
+          card.setExpirymonth(trx_proxy.getCard().getExpirymonth());
+          card.setExpiryyear(trx_proxy.getCard().getExpiryyear());
+          
+           //i will fetch the config from user_management
+          // get how to charge the source e.g with 3dsecure or other ones
+          if(trx_proxy.getType().equals("PIN")){
+            card.setPin(trx_proxy.getCard().getPin());
+          }
+          source.setOperation("pg_charge");
+          source.setEmail(trx_proxy.getEmail());
+          source.setType(trx_proxy.getType());
+          source.setCard(card);
+          Double fee=Double.parseDouble(trx_proxy.getFee());
+          Double amount=Double.parseDouble(trx_proxy.getAmount());
+          String grossamount=Double.toString(fee+amount);
+          order.setAmount(grossamount);
+          order.setCountry(trx_proxy.getCountry());
+          order.setCurrency(trx_proxy.getCurrency());
+          order.setDescription(trx_proxy.getDescription());
+          
+          Transaction transactionobj = new Transaction();
+          transactionobj.setCallbackurl(util.getAppProperties().getProperty("internal_callback"));
+          transactionobj.setReference(trx_proxy.getTranref());
+          
+          cr.setOrder(order);
+          cr.setSource(source);
+          cr.setPublickey("test");
+          cr.setTransaction(transactionobj);
+
+              System.out.println("printing out the request to be sent to core.....");
+            System.out.println(gson.toJson(cr));
+
+         // initiating the charge
+          post = new HttpPost(util.getAppProperties().getProperty("card_initiate_endpoint"));
+          post.setHeader("Authorization", "Bearer "+obj.get("access_token").getAsString());
+          post.setHeader("Content-Type", "application/json");
+          StringEntity ent = new StringEntity(gson.toJson(cr));
+          post.setEntity(ent);
+          response=client.execute(post);
+          String msg = EntityUtils.toString(response.getEntity());
+          obj = new JsonParser().parse(msg).getAsJsonObject();
+          System.out.println("response from core..."+obj);
+          
+            
+          String message=obj.get("message").getAsString();
+          String code=obj.get("code").getAsString();
+          obj2 = obj.get("transaction").getAsJsonObject();
+          String linkref=null;
+
+           // check the response returned from core
+           
+                    if(obj2.get("linkingreference").isJsonNull()){
+               System.out.println("sending to log now.....");
+                //Create a thread to log the event 
+                executorservice.execute(()->{
+                    System.out.println("sending to log the now.....");
+              
+                    // will need to determine the gateway used e.g MPGS,PIN, etc.. when i get the merchant info
+                    String res  = new Dao().nlogTransactionEvent("MPGS", trx_proxy.getTranref(), linkref, code, message).toString();
+                    System.out.println("response....after log"+res);
+                });
+                
+               return obj.toString();
+             }else{
+                  String  validlinkref=obj2.get("linkingreference").getAsString();           
+                //Creating  thread to log the event 
+                  executorservice.execute(()->{
+                   System.out.println("sending to log the now.....");             
+                    // will need to determine the gateway used e.g MPGS,PIN, etc..
+                    String res  = new Dao().nlogTransactionEvent("MPGS", trx_proxy.getTranref(), validlinkref, code, message).toString();
+                    System.out.println("response....after log"+res);
+                 });
+                    return obj.toString();
+              
+          }
+           
+                 
+             }
+           
+           }
+              
+          }else{
+          
+          
+          }
+              
+              
+          }catch(Exception e){
+           
+              
+              
+          }
+    
+    }

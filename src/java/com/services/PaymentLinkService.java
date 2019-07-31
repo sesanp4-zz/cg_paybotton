@@ -6,6 +6,8 @@
 package com.services;
 
 import com.google.gson.JsonObject;
+import com.handlers.PaymentLinkHandler;
+import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -29,7 +31,9 @@ public class PaymentLinkService {
 
     @Context
     private UriInfo context;
-
+    
+    @Inject
+    PaymentLinkHandler handler;
     /**
      * Creates a new instance of PaymentLinkService
      */
@@ -37,15 +41,11 @@ public class PaymentLinkService {
     }
 
     
-    @Path("get/link/text}")
+    @Path("get/link/{key}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String generateLink(@PathParam("key")String key) {
-        
-        // check the text to know the merchant link that should be generated
-        return "http://bc-design.surge.sh"+key;
-        
-        //throw new UnsupportedOperationException();
+       return handler.generateLink(key);
     }
 
    

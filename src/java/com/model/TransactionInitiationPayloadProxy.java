@@ -14,18 +14,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionInitiationPayloadProxy {
     
-    String reference;
-    String fullname;
-    String sender;
-    String bankcode;
-    String currency;
-    String description;
-    String country;
-    String amount;
     
     
-  //  String fullname, email, mobile, public_key, reference, currency, description,
-  //  country,amount,clientappcode, redirecturl, callbackurl, type,channelType,deviceType,sourceIP,fee;
+    String fullname, email, mobile, public_key, reference, currency, description,
+    country,amount,clientappcode, redirecturl, callbackurl, type,channelType,deviceType,sourceIP,fee;
+    
+    Account account;
 
     public String getReference() {
         return reference;
@@ -43,21 +37,7 @@ public class TransactionInitiationPayloadProxy {
         this.fullname = fullname;
     }
 
-    public String getSender() {
-        return sender;
-    }
 
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getBankcode() {
-        return bankcode;
-    }
-
-    public void setBankcode(String bankcode) {
-        this.bankcode = bankcode;
-    }
 
     public String getCurrency() {
         return currency;
@@ -89,6 +69,102 @@ public class TransactionInitiationPayloadProxy {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getPublic_key() {
+        return public_key;
+    }
+
+    public void setPublic_key(String public_key) {
+        this.public_key = public_key;
+    }
+
+    public String getClientappcode() {
+        return clientappcode;
+    }
+
+    public void setClientappcode(String clientappcode) {
+        this.clientappcode = clientappcode;
+    }
+
+    public String getRedirecturl() {
+        return redirecturl;
+    }
+
+    public void setRedirecturl(String redirecturl) {
+        this.redirecturl = redirecturl;
+    }
+
+    public String getCallbackurl() {
+        return callbackurl;
+    }
+
+    public void setCallbackurl(String callbackurl) {
+        this.callbackurl = callbackurl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(String channelType) {
+        this.channelType = channelType;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getSourceIP() {
+        return sourceIP;
+    }
+
+    public void setSourceIP(String sourceIP) {
+        this.sourceIP = sourceIP;
+    }
+
+    public String getFee() {
+        return fee;
+    }
+
+    public void setFee(String fee) {
+        this.fee = fee;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
     
     

@@ -44,7 +44,7 @@ public class Transactions{
     @Column(name="amount")
     String amount;
     
-    @Column(name="reference")
+    @Column(name="reference",unique = true)
     String reference;
     
     @Transient

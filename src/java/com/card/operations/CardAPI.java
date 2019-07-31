@@ -19,7 +19,6 @@ import com.util.GenericException;
 import com.util.Utilities;
 import com.validator.Validator;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
@@ -28,8 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import org.apache.http.ParseException;
@@ -59,17 +56,19 @@ public class CardAPI {
     CloseableHttpResponse response;
     Gson gson = new Gson();
     Utilities util = new Utilities();
-    ExecutorService executorservice  = Executors.newFixedThreadPool(1);;
+    ExecutorService executorservice  = Executors.newFixedThreadPool(1);
     
     Logger logger = Logger.getLogger("CardApi.class");
     
     
    //  Properties props = util.getProp();
+
     
-    public String ninitiate_Transaction(CardTransactionRequestProxy trx_proxy) throws GenericException{
-        
-       try{ 
-        // format the date
+     public String ninitiate_Transaction(CardTransactionRequestProxy trx_proxy) throws GenericException{
+    
+          try{
+           
+                    // format the date
            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy:MM:dd hh:mm:ss");
            String datetime=df.format(LocalDateTime.now());
 
@@ -111,26 +110,15 @@ public class CardAPI {
            
         
           Validator validator = new Validator();
-        if(validator.validateMerchant(trx_info.getPublic_key(), user_info.getCurrency(), trx_info.getAmount())){
-
-            //Create a thread to  add a copy of the transaction to database
-//             executorservice.execute(()->{
-//              String status = new Dao().addObject(trx);
-//              System.out.println(status);
-//            });
-             
-                // save the object first then send to core
-               if(dao.addObject(trx)<0){
-                 obj = new JsonObject();
-                 obj.addProperty("code", "S31");
-                 obj.addProperty("message", "operation failed");
-                 System.out.println("could not save object");
-                 return obj.toString();
-               }
+          
+          if(validator.validateMerchant(trx_info.getPublic_key(), user_info.getCurrency(), trx_info.getAmount())){
                
-               // Sending to cores
-             
-             // Get Access Token //        
+                       // save the object first then send to core
+                JsonObject  status=dao.addObject(trx);
+                System.out.println("--------status----"+status);
+           if(status.get("code").getAsString().equals("00")){
+                 
+                    // Get Access Token //        
              obj = new JsonParser().parse(util.getThirdPartyApi()).getAsJsonObject();
              System.out.println("obj is ...."+obj);
              
@@ -140,9 +128,9 @@ public class CardAPI {
                  obj2.addProperty("message", "operation failed");
                  System.out.println("cuase......"+obj);
                 return obj2.toString();
-             }
-             
-              // Construct the request to be sent to seerbit api         
+             }else{
+                 
+                         // Construct the request to be sent to seerbit api         
           CardTransactionRequest cr = new CardTransactionRequest();
           Card card = new Card();
           Source source = new Source();
@@ -178,8 +166,8 @@ public class CardAPI {
           cr.setPublickey("test");
           cr.setTransaction(transactionobj);
 
-            System.out.println("printing out the request to be sent to core.....");
-            System.out.println(gson.toJson(cr));
+          System.out.println("printing out the request to be sent to core.....");
+          System.out.println(gson.toJson(cr));
 
          // initiating the charge
           post = new HttpPost(util.getAppProperties().getProperty("card_initiate_endpoint"));
@@ -199,8 +187,8 @@ public class CardAPI {
           String linkref=null;
 
            // check the response returned from core
-          
-          if(obj2.get("linkingreference").isJsonNull()){
+           
+             if(obj2.get("linkingreference").isJsonNull()){
                System.out.println("sending to log now.....");
                 //Create a thread to log the event 
                 executorservice.execute(()->{
@@ -223,19 +211,37 @@ public class CardAPI {
                  });
                     return obj.toString();
               
-          }        
-        }else{
+          }
+           
+                 
+             }
+           
+           }else{
+            
+              return status.toString();
+               
+           }
+              
+          }else{
+                            //  If validation failed
+                            
             obj = new JsonObject();
             obj.addProperty("code", "S18");
-            obj.addProperty("message","Operation not permitted to this merchant");
+            obj.addProperty("message","Transaction failed, amount out of range");
             return obj.toString(); 
-        }
-        
-         }catch(JsonSyntaxException | IOException | ParseException e){
-            throw new GenericException(e.getMessage());
-         }
-
+          
+          }
+              
+              
+          }catch(JsonSyntaxException | IOException | ParseException e){
+           
+              throw new GenericException(e.getMessage());
+              
+          }
+    
     }
+    
+    
     
     //
     public String nvalidateOTP(ValidateOTPRequest request) throws IOException{
@@ -259,7 +265,7 @@ public class CardAPI {
           response=client.execute(post);
           String msg = EntityUtils.toString(response.getEntity());
           obj = new JsonParser().parse(msg).getAsJsonObject();
-          dao.nupdateTransactionEvent(request.getTransaction().getLinkingreference(), obj.get("message").getAsString(),obj.get("code").getAsString(),obj.get("reference").getAsString());
+          dao.nupdateTransactionEvent(request.getTransaction().getLinkingreference(),obj.get("code").getAsString(),obj.get("message").getAsString(),obj.get("reference").getAsString());
           return msg;   
     } 
     

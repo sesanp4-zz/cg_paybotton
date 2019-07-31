@@ -7,10 +7,11 @@ package com.util;
 
 import com.entities.Event;
 import com.entities.Subscription;
+import com.entities.Transaction;
 import com.entities.TransactionEvent;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.io.Serializable;
+import com.google.gson.JsonParser;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,18 +41,34 @@ public class Dao {
      
      ExecutorService es = Executors.newFixedThreadPool(1);
     
-         public int addObject(Object obj){
+         public JsonObject addObject(Object obj){
          try{
-            // Long status=0;          
+            // Long status=0;  
+            Transaction transaction =(Transaction)obj;
+      if(ngetTransactionDetails(transaction.getRef())==null){    
           session= HibernateUtil.getSessionFactory().openSession();
           session.beginTransaction();
-          Long id= (Long) session.save(obj);             
+          Long id= (Long) session.save(obj);  
           session.getTransaction().commit();         
           System.out.println("user added successfully with id "+id); 
-          return id.intValue();
+          obj2 = new JsonObject();
+          obj2.addProperty("code", "00");
+          obj2.addProperty("message", "succesful");
+          return obj2;
+        }else{
+             obj2 = new JsonObject();
+             obj2.addProperty("code", "S18");
+             obj2.addProperty("message", "Transaction reference must be unique");
+             return obj2;
+        }
         }catch(Exception e ){
-             System.out.println(" could not save object cause.."+e.getMessage());
-             return 0;
+             System.out.println("============error======");
+             System.out.println("888888 cause 88888"+e.getMessage());
+             System.out.println("11111 cause 88888"+e.getCause()); 
+             obj2 = new JsonObject();
+             obj2.addProperty("code", "S7");
+             obj2.addProperty("message", "operation failed");
+             return obj2;
         } finally{
           if (session!=null) {
                 if(session.isOpen()) {
@@ -85,6 +102,8 @@ public class Dao {
       return "successful";
     }
 
+    
+    
     
     public com.entities.Transaction ngetTransactionDetails(String reference){
       com.entities.Transaction transaction=null;
@@ -160,11 +179,14 @@ public class Dao {
      // Transaction transaction;
     public String nupdateTransactionEvent(String gatewayref,String responseCode,String responseMessage,String trxn_ref){
       try{
+          System.out.println("======= the parameters======"+responseCode+"======"+responseMessage+"====="+trxn_ref+"======"+gatewayref);
             session= HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             query =  session.createQuery("from Transaction  transaction where transaction.ref=:trxn_ref");
             query.setParameter("trxn_ref", trxn_ref);
             com.entities.Transaction transaction =(com.entities.Transaction) query.uniqueResult();
+            
+            System.out.println("===== the transaction====="+gson.toJson(transaction));
             
             // Update transaction Event
               transaction.getUserinfo().getTransactionInfo().getTransactionEvent().setGatewayCode(responseCode);
@@ -243,13 +265,24 @@ public class Dao {
     }
       
       
-      public String ngetTransactionStatus(String ref){
+      public String ngetTransactionStatus(String ref,String payload){
       try{
+             obj = new JsonParser().parse(payload).getAsJsonObject();
+             String key=obj.get("clientId").getAsString();
             session= HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             query =  session.createQuery("from Transaction  transaction where transaction.ref=:ref");
             query.setParameter("ref", ref);
             com.entities.Transaction transaction =(com.entities.Transaction) query.uniqueResult();
+            
+            
+            if(!transaction.getUserinfo().getTransactionInfo().getPublic_key().equals(key)){
+                obj = new JsonObject();
+                obj.addProperty("code", "S7");
+                obj.addProperty("message", "transaction not found");
+               return obj.toString();
+            }
+    
             obj = new JsonObject();
             
             obj.addProperty("customerName", transaction.getUserinfo().getFullname());
@@ -258,7 +291,7 @@ public class Dao {
             obj.addProperty("fee", transaction.getUserinfo().getTransactionInfo().getFee());
             obj.addProperty("amount", transaction.getUserinfo().getTransactionInfo().getAmount());
             obj.addProperty("code", transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayCode());
-            if(transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage().equals("APPROVED")){
+            if(transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage().equals("APPROVED")||transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage().equals("Approved by Financial Institution")){
                  obj.addProperty("message", "Successful");
             }else{
                 obj.addProperty("message", transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage());
@@ -333,6 +366,12 @@ public class Dao {
             System.out.println("...."+gson.toJson(transaction));
             
             // set transactionEvent parameters
+               String responsemsg=null;
+               
+              if(responseMessage.equals("Approved by Financial Institution")){
+                responsemsg="APPROVED";
+              }
+            
              transaction.getUserinfo().getTransactionInfo().getTransactionEvent().setGatewayMessage(responseMessage);
              transaction.getUserinfo().getTransactionInfo().getTransactionEvent().setGatewayCode(responseCode);
              System.out.println("after updating transactionEvent...."+gson.toJson(transaction));

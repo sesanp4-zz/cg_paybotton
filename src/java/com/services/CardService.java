@@ -17,14 +17,15 @@ import com.util.Dao;
 import com.util.Utilities;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Base64;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -48,7 +49,8 @@ public class CardService {
    
     @Context
     private UriInfo context;
-     
+    
+       
      @Inject
      Dao dao;
      
@@ -119,8 +121,10 @@ public class CardService {
     @GET
     @Path("get/transaction/status/{ref}")
     @Produces(MediaType.APPLICATION_JSON)   
-    public String ngetTransactionStatus(@PathParam("ref")String ref){
-      return dao.ngetTransactionStatus(ref);
+    public String ngetTransactionStatus(@PathParam("ref")String ref,@HeaderParam("Authorization")String auth){
+        String []token =auth.split("\\.");
+        String payload=new String(Base64.getDecoder().decode(token[1]));
+      return dao.ngetTransactionStatus(ref,payload);
     }
     
     @GET

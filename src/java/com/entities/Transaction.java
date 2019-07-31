@@ -30,7 +30,7 @@ public class Transaction{
     @Column(name="id")
     private Long id; 
 
-    @Column(name="ref")
+    @Column(name="ref",unique = true)
     String ref;
     
     @OneToOne(cascade = CascadeType.ALL)

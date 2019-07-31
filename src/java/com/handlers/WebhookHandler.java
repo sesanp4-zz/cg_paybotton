@@ -43,13 +43,14 @@ public class WebhookHandler {
     
     
     
-    public String subscribe(SubscriptionObject o){
+  
+     public String subscribe(SubscriptionObject o){
       Subscription sub = new Subscription();
       sub.setNotificationurl(o.getNotificationUrl());
       sub.setMerchantkey(o.getMerchantkey());
       sub.setDatetime(DateTimeFormater.getRealTimeFormat());
-      int status = dao.addObject(sub);
-      if(status>0){
+      JsonObject status = dao.addObject(sub);
+      if(status.get("code").getAsString().equals("00")){
        obj = new JsonObject();
        obj.addProperty("code", "00");
        obj.addProperty("message", "success");
@@ -61,6 +62,7 @@ public class WebhookHandler {
       return obj.toString();
     }
     
+
     public void sendNotification(String merchantKey,WebhookEvent event){ 
        // String eventtype,String eventmessage,String transactionReference
        try {

@@ -6,15 +6,9 @@
 package com.services;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.handlers.AccountHandler;
 import com.model.TransactionInitiationPayloadProxy;
 import com.model.Transactionvalidationproxy;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -24,11 +18,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.soap.SOAPException;
-import org.json.JSONException;
 
 /**
  * REST Web Service

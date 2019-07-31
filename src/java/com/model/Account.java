@@ -5,6 +5,8 @@
  */
 package com.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author centricgateway
@@ -12,6 +14,9 @@ package com.model;
 public class Account {
      String sender;
     String senderbankcode;
+    
+    //@JsonIgnore
+    String name;
 
     public String getSender() {
         return sender;
@@ -28,5 +33,15 @@ public class Account {
     public void setSenderbankcode(String senderbankcode) {
         this.senderbankcode = senderbankcode;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
     
 }

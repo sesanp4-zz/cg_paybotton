@@ -104,9 +104,15 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
     
     public  String generateToken(String clientId,String ClientSecret){
         
-       if(clientId.equals("pk_225b6971c8032eed3d4643836c26f669a014fc12") && ClientSecret.equals("sk_225b6971c8032eed3d4643836c26f669a014f2c2")){
+        //check user-management service;
+        
+       JsonObject merchantInfoObj = getMerchantInfo(clientId);
+      
+       if(merchantInfoObj.has("payload")){
+           String pub =merchantInfoObj.get("payload").getAsJsonObject().get("test_public_key").getAsString(); 
+           String priv =merchantInfoObj.get("payload").getAsJsonObject().get("test_private_key").getAsString(); 
         Long exp=System.currentTimeMillis()+3600000;
-        String token = Jwts.builder().claim("clientId", clientId).claim("ClientSecret", ClientSecret)
+        String token = Jwts.builder().claim("clientId", pub).claim("ClientSecret", priv)
        .setExpiration(new Date(exp)).setIssuer("CG")    
        .signWith(SignatureAlgorithm.HS512, "centric@_key#".getBytes()).compact();                
         obj = new JsonObject();
@@ -189,6 +195,41 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
     } 
       
      
+     public JsonObject getMerchantInfo(String mid){
+         try{
+             // https://staging.seerbitapigateway.com/cg-userms/api/v1/user/verify/
+           //  https://staging.seerbitapigateway.com/merchants/api/v1/auth/verify/
+           // obj ;
+             get = new HttpGet(getAppProperties().getProperty("verify_merchant_info")+mid);
+             response=client.execute(get);
+             String msg = EntityUtils.toString(response.getEntity());
+             obj = new JsonParser().parse(msg).getAsJsonObject();
+             System.out.println("merchant info response...."+obj);
+             JsonObject obj2 = new JsonObject();
+               if((obj.get("responseCode").getAsString()).equals("00")){
+                     return obj;
+//                   obj2.addProperty("code", "00");
+//                   obj2.addProperty("currency", obj.get("payload").getAsJsonObject().get("default_currency").getAsString());
+//                   obj2.addProperty("max_amount", obj.get("payload").getAsJsonObject().get("max_amount").getAsString());
+//                   obj2.addProperty("min_amount", obj.get("payload").getAsJsonObject().get("min_amount").getAsString());
+               }else{
+                   System.out.println("somefin is wrong");
+                   obj2.addProperty("code", "S18");
+                   obj2.addProperty("message","Merchant does not exist");
+               }  
+               return obj2;
+             
+             
+         }catch(Exception e){
+           obj = new JsonObject();
+           obj.addProperty("code", "S23");
+           obj.addProperty("message", "operation failed");
+           System.out.println("cause...."+e.getMessage());
+           return obj;
+         }
+    } 
+     
+     
      public JsonObject fectchMerchantInfoforTThirdParty(String mid){
          try{
 
@@ -213,6 +254,12 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
      
     public void sendToSettlement(com.entities.Transaction transaction){
         try{            
+            
+            String resmsg=null;
+            if(transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage().equals("Approved by Financial Institution")||transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage().equals("APPROVED")){
+                resmsg="APPROVED";
+            }
+            
             String datetime=transaction.getUserinfo().getTransactionInfo().getDatetime().replaceAll(":", "").replaceAll(" ", "");
            obj = new JsonObject();
            obj.addProperty("public_key", transaction.getUserinfo().getTransactionInfo().getPublic_key());
@@ -221,7 +268,7 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
            obj.addProperty("customerName", transaction.getUserinfo().getFullname());
            obj.addProperty("customerEmail", transaction.getUserinfo().getEmail());
            obj.addProperty("country", transaction.getUserinfo().getCountry());
-           obj.addProperty("gatewayResponseMessage", transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayMessage());
+           obj.addProperty("gatewayResponseMessage", resmsg);
            obj.addProperty("gatewayResponseCode", transaction.getUserinfo().getTransactionInfo().getTransactionEvent().getGatewayCode());
            obj.addProperty("amount", transaction.getUserinfo().getTransactionInfo().getAmount());
            obj.addProperty("customerIP", transaction.getUserinfo().getTransactionInfo().getSourceIP());
@@ -361,9 +408,12 @@ public static PublicKey getPublicKey(String modulus, String publicExponent)  thr
     }
     
     public static void main(String[] args) throws IOException {       
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy:MM:dd hh:mm:ss");
-           String datetime=df.format(LocalDateTime.now());
-           System.out.println(datetime);
+//           DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy:MM:dd hh:mm:ss");
+//           String datetime=df.format(LocalDateTime.now());
+//           System.out.println(datetime);
+//  
+           System.out.println(new Utilities().generateToken("kogLJrZdGb", "$2a$12$m7xjYvZw2f1cnn2dK5p90eanuh.TtPQRyFzDVktPccZwFB/0ARSEi"));
+
    
     }
     
